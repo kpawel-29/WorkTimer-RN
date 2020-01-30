@@ -31,7 +31,7 @@ class HomeView extends React.Component {
   async handleAppStateChange(nextAppState) {
     console.log('nextAppState', nextAppState);
     const now = new Date().getTime();
-    const {time} = this.state;
+    const {time, paused} = this.state;
 
     const readTime = await AsyncStorage.getItem('@time');
     const readStateChangeTimestamp = await AsyncStorage.getItem(
@@ -42,20 +42,30 @@ class HomeView extends React.Component {
     const newTime = parseInt(readTime) + parseInt(timeDiff);
 
     if (nextAppState === 'active') {
-      this.setState(
-        {
-          time: newTime,
-        },
-        this.startTimer,
-      );
-    }
+      const isPaused = await AsyncStorage.getItem('@isPaused');
+      const wasPaused = isPaused && isPaused === 'true';
 
-    await AsyncStorage.setItem('@time', time);
-    await AsyncStorage.setItem('@appStateChangedTime', now.toString());
+      let newState = {
+        time: parseInt(readTime),
+        paused: wasPaused,
+      };
+
+      if (!wasPaused) {
+        newState.time = newTime;
+      }
+      this.setState(newState, this.startTimer);
+    } else {
+      await AsyncStorage.setItem('@time', time.toString());
+      await AsyncStorage.setItem('@isPaused', paused ? 'true' : 'false');
+      await AsyncStorage.setItem('@appStateChangedTime', now.toString());
+    }
   }
 
   startTimer = () => {
-    setInterval(() => {
+    if (this.timerIntervalId) {
+      clearInterval(this.timerIntervalId);
+    }
+    this.timerIntervalId = setInterval(() => {
       const {time, paused} = this.state;
       if (!paused) {
         this.setState({time: time + 1000});
