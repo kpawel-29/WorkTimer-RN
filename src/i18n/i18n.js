@@ -1,7 +1,8 @@
 const i18n = {
     HOME: {
         WELCOME_HEADER: 'Good Morning!',
-        START: 'START'
+        START: 'START',
+        PAUSE: 'PAUSE'
     }
 };
 

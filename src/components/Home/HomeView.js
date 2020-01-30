@@ -47,7 +47,7 @@ class HomeView extends React.Component {
             {moment.utc(time).format('HH:mm:ss')}
         </Text>
         <Text style={[HomeViewStyles.mainActionButtonText, HomeViewStyles.mainActionButtonPauseText]}>
-            Pause
+            {i18n.HOME.PAUSE}
         </Text>
       </TouchableOpacity>
     );
