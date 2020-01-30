@@ -3,11 +3,14 @@ import {Text, View, TouchableOpacity} from 'react-native';
 import HomeViewStyles from './HomeViewStyles';
 import i18n from '../../i18n/i18n';
 
+import moment from 'moment';
+
 class HomeView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       time: 0,
+      paused: false,
     };
   }
 
@@ -17,7 +20,10 @@ class HomeView extends React.Component {
         style={HomeViewStyles.mainActionButton}
         onPress={() => {
           setInterval(() => {
-            this.setState({time: this.state.time + 1000});
+            const {time, paused} = this.state;
+            if (!paused) {
+              this.setState({time: time + 1000});
+            }
           }, 1000);
         }}>
         <Text style={HomeViewStyles.mainActionButtonText}>
@@ -28,10 +34,21 @@ class HomeView extends React.Component {
   };
 
   renderRunningTimer = () => {
-    const {time} = this.state;
+    const {time, paused} = this.state;
     return (
-      <TouchableOpacity style={HomeViewStyles.mainActionButton}>
-        <Text style={HomeViewStyles.mainActionButtonText}>{time}</Text>
+      <TouchableOpacity
+        style={HomeViewStyles.mainActionButton}
+        onPress={() => {
+          this.setState({
+            paused: !paused,
+          });
+        }}>
+        <Text style={HomeViewStyles.mainActionButtonText}>
+            {moment.utc(time).format('HH:mm:ss')}
+        </Text>
+        <Text style={[HomeViewStyles.mainActionButtonText, HomeViewStyles.mainActionButtonPauseText]}>
+            Pause
+        </Text>
       </TouchableOpacity>
     );
   };
